@@ -56,10 +56,15 @@ def connecter(i,t,s,a):
         threadList[i][2] = True
         rLock.release()
         print timeShower()+"[INFO] Tunnel %i closed by" % i,info[0][t]
-        a.shutdown(socket.SHUT_RDWR)
-        a.close()
-        s.shutdown(socket.SHUT_RDWR)
-        s.close()
+        shutdownList[0] = a.shutdown(socket.SHUT_RDWR)
+        shutdownList[1] = a.close()
+        shutdownList[2] = s.shutdown(socket.SHUT_RDWR)
+        shutdownList[3] = s.close()
+        for d in shutdownList:
+          try:
+            d()
+          except:
+            pass
         break
       #将获取到的信息输出到对端
       print timeShower()+tunnelShower(i)+info[1][t],dataFormat(data,1)
