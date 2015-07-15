@@ -10,13 +10,32 @@ import getopt
 def dataFormat(d,t):
   if t == 1: #将不可见字符格式化为点
     r = ''
+    p = 0
     for c in d:
-      if (ord(c) <= 31) or (ord(c) == 127):
+      o = ord(c)
+      #排除US-ASCII之外的字符显示
+      if p>0:
+        r += '.'
+        p -= 1
+        continue
+      if o >= 192 and o <= 223:
+        r += '.'
+        p = 1
+        continue
+      if o >= 224 and o <= 239:
+        r += '.'
+        p = 2
+        continue
+      if o >= 240 and o <= 247:
+        r += '.'
+        p = 3
+        continue
+      if (o <= 31) or (o == 127):
         r += '.'
       else:
         r += c
     return r
-  elif t == 2: #将所有字符格式化为ACSII码16进制形式
+  elif t == 2: #将所有字符格式化为16进制形式
     r = ['%0*X' % (2,ord(c)) for c in d]
     return r
   else: #输入类型错误
@@ -172,14 +191,14 @@ if __name__ == '__main__':
     t[2] = True
   for s in socketList:
     try:
-        s[0].shutdown(socket.SHUT_RDWR)
-        s[0].close()
+      s[0].shutdown(socket.SHUT_RDWR)
+      s[0].close()
     except:
-        pass
+      pass
     try:
-        s[1].shutdown(socket.SHUT_RDWR)
-        s[1].close()
+      s[1].shutdown(socket.SHUT_RDWR)
+      s[1].close()
     except:
-        pass
+      pass
   print "\nThe program ended"
   sys.exit(1)
