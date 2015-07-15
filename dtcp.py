@@ -134,6 +134,7 @@ if __name__ == '__main__':
     print 'dst address can\'t be NONE!'
     sys.exit(1)
   threadList = [] #线程列表
+  socketList = [] #Socket列表
   #源地址开始监听本地端口
   srvSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
   srvSocket.bind((srvHost,srvPort))
@@ -159,11 +160,26 @@ if __name__ == '__main__':
       continue
     #将连接放入线程处理
     i = len(threadList)
+    socketList.append((conn,dstSocket))
     srvThread = threading.Thread(target=connecter,args=(i,1,conn,dstSocket))
     dstThread = threading.Thread(target=connecter,args=(i,0,dstSocket,conn))
     srvThread.start()
     dstThread.start()
     threadList.append([srvThread,dstThread,False])
     print timeShower()+'[INFO] Tunnel',i,'created'
+  #退出程序前结束socket使线程全部退出
+  for t in threadList:
+    t[2] = True
+  for s in socketList:
+    try:
+        s[0].shutdown(socket.SHUT_RDWR)
+        s[0].close()
+    except:
+        pass
+    try:
+        s[1].shutdown(socket.SHUT_RDWR)
+        s[1].close()
+    except:
+        pass
   print "\nThe program ended"
   sys.exit(1)
