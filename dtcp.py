@@ -179,8 +179,11 @@ if __name__ == '__main__':
       print timeShower()+"[DST] Success connect to %s with port %i" % (dstHost,dstPort)
     except:
       print timeShower()+"[SRV] Connect to %s:%i failed" % (dstHost,dstPort)
-      conn.shutdown(socket.SHUT_RDWR)
-      conn.close()
+      try:
+        conn.shutdown(socket.SHUT_RDWR)
+        conn.close()
+      except:
+        pass
       continue
     #将连接放入线程处理
     i = len(threadList)
